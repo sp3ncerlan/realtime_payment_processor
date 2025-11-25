@@ -1,4 +1,4 @@
-package com.spencer.payments;
+package com.spencer.payments.repository;
 
 import com.spencer.payments.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
