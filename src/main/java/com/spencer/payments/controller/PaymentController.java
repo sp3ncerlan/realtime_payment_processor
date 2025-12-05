@@ -3,6 +3,7 @@ package com.spencer.payments.controller;
 import com.spencer.payments.dto.PaymentRequestDTO;
 import com.spencer.payments.entity.Payment;
 import com.spencer.payments.service.PaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<Payment> createPayment(@RequestBody PaymentRequestDTO paymentRequest) {
+    public ResponseEntity<Payment> createPayment(@Valid @RequestBody PaymentRequestDTO paymentRequest) {
         Payment processedPayment = paymentService.processPayment(
                 paymentRequest.getSourceAccountId(),
                 paymentRequest.getDestinationAccountId(),
