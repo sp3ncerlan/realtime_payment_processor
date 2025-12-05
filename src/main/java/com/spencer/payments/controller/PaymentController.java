@@ -1,6 +1,7 @@
 package com.spencer.payments.controller;
 
-import com.spencer.payments.dto.PaymentRequestDTO;
+import com.spencer.payments.dto.request.PaymentRequestDTO;
+import com.spencer.payments.dto.response.PaymentResponseDTO;
 import com.spencer.payments.entity.Payment;
 import com.spencer.payments.service.PaymentService;
 import jakarta.validation.Valid;
@@ -19,12 +20,12 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public ResponseEntity<Payment> createPayment(@Valid @RequestBody PaymentRequestDTO paymentRequest) {
-        Payment processedPayment = paymentService.processPayment(
-                paymentRequest.getSourceAccountId(),
-                paymentRequest.getDestinationAccountId(),
-                paymentRequest.getAmount(),
-                paymentRequest.getCurrency()
+    public ResponseEntity<PaymentResponseDTO> createPayment(@Valid @RequestBody PaymentRequestDTO paymentRequest) {
+        PaymentResponseDTO processedPayment = paymentService.processPayment(
+                paymentRequest.sourceAccountId(),
+                paymentRequest.destinationAccountId(),
+                paymentRequest.amount(),
+                paymentRequest.currency()
         );
 
         return ResponseEntity.ok(processedPayment);

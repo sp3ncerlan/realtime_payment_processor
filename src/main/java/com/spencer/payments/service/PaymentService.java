@@ -1,5 +1,6 @@
 package com.spencer.payments.service;
 
+import com.spencer.payments.dto.response.PaymentResponseDTO;
 import com.spencer.payments.entity.Account;
 import com.spencer.payments.entity.Payment;
 import com.spencer.payments.entity.PaymentStatus;
@@ -21,7 +22,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public Payment processPayment(UUID sourceAccountId, UUID destinationAccountId, BigDecimal amount, String currency) {
+    public PaymentResponseDTO processPayment(UUID sourceAccountId, UUID destinationAccountId, BigDecimal amount, String currency) {
         // Find accounts involved and lock when used
         Account sourceAccount = accountRepository.findWithLockingById(sourceAccountId)
                 .orElseThrow(() -> new RuntimeException("Source account not found with id: " + sourceAccountId));
@@ -35,7 +36,7 @@ public class PaymentService {
         payment.setAmount(amount);
         payment.setCurrency(currency);
         payment.setStatus(PaymentStatus.PENDING);
-        paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
 
         try {
             // check for sufficient funds
@@ -49,14 +50,28 @@ public class PaymentService {
 
             // mark payment as completed
             payment.setStatus(PaymentStatus.COMPLETED);
-            return paymentRepository.save(payment);
+            savedPayment = paymentRepository.save(payment);
         } catch (Exception e) {
             // if any errors, mark payment as FAILED
-            payment.setStatus(PaymentStatus.FAILED);
-            paymentRepository.save(payment);
+            savedPayment.setStatus(PaymentStatus.FAILED);
+            paymentRepository.save(savedPayment);
 
             // rethrow exception to ensure transaction rollback
             throw e;
         }
+
+        return mapToDTO(savedPayment);
+    }
+
+    private PaymentResponseDTO mapToDTO(Payment payment) {
+        return new PaymentResponseDTO(
+                payment.getId(),
+                payment.getSourceAccount().getId(),
+                payment.getDestinationAccount().getId(),
+                payment.getAmount(),
+                payment.getCurrency(),
+                payment.getStatus(),
+                payment.getCreatedAt()
+        );
     }
 }

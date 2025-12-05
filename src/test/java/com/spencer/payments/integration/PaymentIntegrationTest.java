@@ -1,7 +1,7 @@
 package com.spencer.payments.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spencer.payments.dto.PaymentRequestDTO;
+import com.spencer.payments.dto.request.PaymentRequestDTO;
 import com.spencer.payments.entity.Account;
 import com.spencer.payments.entity.Customer;
 import com.spencer.payments.repository.AccountRepository;
