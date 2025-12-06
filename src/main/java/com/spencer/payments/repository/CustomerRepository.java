@@ -10,4 +10,10 @@ import java.util.UUID;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     Optional<Customer> findByEmail(String email);
+
+    // returns full customer object
+    Optional<Customer> findByUsername(String username);
+
+    // check for existence on username creation
+    boolean existsByUsername(String username);
 }
