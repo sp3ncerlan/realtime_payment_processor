@@ -1,0 +1,53 @@
+###
+POST http://localhost:8080/api/customers
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com"
+}
+
+> {% client.global.set("customerId", response.body.id) %}
+
+### Create Source Account (Checking)
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "currency": "USD",
+  "accountType": "CHECKING",
+  "initialBalance": 1000.00
+}
+
+> {% client.global.set("sourceAccountId", response.body.id) %}
+
+### Create Destination Account (Savings)
+POST http://localhost:8080/api/accounts
+Content-Type: application/json
+
+{
+  "customerId": "{{customerId}}",
+  "currency": "USD",
+  "accountType": "SAVINGS",
+  "initialBalance": 50.00
+}
+
+> {% client.global.set("destAccountId", response.body.id) %}
+
+### Make Payment
+POST http://localhost:8080/api/payments
+Content-Type: application/json
+
+{
+  "sourceAccountId": "{{sourceAccountId}}",
+  "destinationAccountId": "{{destAccountId}}",
+  "amount": 100.00,
+  "currency": "USD"
+}
+
+### Check Source Account Balance (Should be $900)
+GET http://localhost:8080/api/accounts/{{sourceAccountId}}
+
+### Check Destination Account Balance (Should be $150)
+GET http://localhost:8080/api/accounts/{{destAccountId}}

@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 -- Payment status enum
 CREATE TYPE payment_status AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
 
--- Payments table
+-- Payment table
 CREATE TABLE IF NOT EXISTS payments (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     source_account_id uuid NOT NULL REFERENCES accounts(id),

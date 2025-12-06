@@ -1,12 +1,12 @@
-package com.spencer.payments;
+package com.spencer.payments.repository;
 
 import com.spencer.payments.entity.Customer;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-public class CustomerEntityTest {
+public class CustomerRepositoryTest {
 
     @Autowired
     private CustomerRepository customerRepository;
