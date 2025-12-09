@@ -31,6 +31,13 @@ public class Customer {
     @Column(name = "created_at", nullable = false, columnDefinition = "timestamptz")
     private OffsetDateTime createdAt;
 
+    // authentication fields
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) {
