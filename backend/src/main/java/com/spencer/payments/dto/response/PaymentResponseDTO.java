@@ -10,6 +10,8 @@ public record PaymentResponseDTO(
         UUID id,
         UUID sourceAccountId,
         UUID destAccountId,
+        String sourceName,
+        String destName,
         BigDecimal amount,
         String currency,
         PaymentStatus status,

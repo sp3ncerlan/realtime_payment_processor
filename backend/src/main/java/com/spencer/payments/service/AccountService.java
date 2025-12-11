@@ -48,11 +48,4 @@ public class AccountService {
                 account.getCreatedAt()
         );
     }
-
-    public AccountResponseDTO getAccount(UUID id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-
-        return mapToDTO(account);
-    }
 }

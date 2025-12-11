@@ -30,8 +30,9 @@ public class Account {
     @Column(name = "account_number", nullable = false, unique = true)
     private String accountNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
-    private String accountType;
+    private AccountType accountType;
 
     @Column(nullable = false)
     private String currency;

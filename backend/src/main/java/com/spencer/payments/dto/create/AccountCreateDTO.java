@@ -1,5 +1,6 @@
 package com.spencer.payments.dto.create;
 
+import com.spencer.payments.entity.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -12,7 +13,7 @@ public record AccountCreateDTO(
 
         @NotBlank(message = "Currency is required") String currency,
 
-        @NotBlank(message = "Account type is required (e.g., CHECKING, SAVINGS)") String accountType,
+        @NotBlank(message = "Account type is required (e.g., CHECKING, SAVINGS)") AccountType accountType,
 
         @PositiveOrZero(message = "Initial balance cannot be negative") BigDecimal initialBalance
 ) {

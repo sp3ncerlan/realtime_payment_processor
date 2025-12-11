@@ -1,5 +1,6 @@
 package com.spencer.payments.service;
 
+import com.spencer.payments.controller.PaymentWebSocketController;
 import com.spencer.payments.dto.response.PaymentResponseDTO;
 import com.spencer.payments.entity.Account;
 import com.spencer.payments.entity.Payment;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,9 +22,18 @@ public class PaymentService {
 
     private final AccountRepository accountRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentWebSocketController paymentWebSocketController;
+
+    public List<PaymentResponseDTO> getPaymentsByCustomerId(UUID customerId) {
+        List<Payment> payments =  paymentRepository.findByCustomerId(customerId);
+
+        return payments.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
 
     @Transactional
-    public PaymentResponseDTO processPayment(UUID sourceAccountId, UUID destinationAccountId, BigDecimal amount, String currency) {
+    public PaymentResponseDTO processPayment(UUID customerId, UUID sourceAccountId, UUID destinationAccountId, BigDecimal amount, String currency) {
         // Find accounts involved and lock when used
         Account sourceAccount = accountRepository.findWithLockingById(sourceAccountId)
                 .orElseThrow(() -> new RuntimeException("Source account not found with id: " + sourceAccountId));
@@ -60,6 +71,18 @@ public class PaymentService {
             throw e;
         }
 
+        paymentWebSocketController.sendPaymentUpdate(new PaymentResponseDTO(
+                payment.getId(),
+                payment.getSourceAccount().getId(),
+                payment.getDestinationAccount().getId(),
+                payment.getSourceAccount().getCustomer().getName(),
+                payment.getDestinationAccount().getCustomer().getName(),
+                payment.getAmount(),
+                payment.getCurrency(),
+                payment.getStatus(),
+                payment.getCreatedAt()
+        ));
+
         return mapToDTO(savedPayment);
     }
 
@@ -68,6 +91,8 @@ public class PaymentService {
                 payment.getId(),
                 payment.getSourceAccount().getId(),
                 payment.getDestinationAccount().getId(),
+                payment.getSourceAccount().getCustomer().getName(),
+                payment.getDestinationAccount().getCustomer().getName(),
                 payment.getAmount(),
                 payment.getCurrency(),
                 payment.getStatus(),

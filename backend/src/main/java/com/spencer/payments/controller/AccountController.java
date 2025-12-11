@@ -22,9 +22,4 @@ public class AccountController {
     public ResponseEntity<AccountResponseDTO> createAccount(@Valid @RequestBody AccountCreateDTO dto) {
         return ResponseEntity.ok(accountService.createAccount(dto));
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<AccountResponseDTO> getAccount(@PathVariable UUID id) {
-        return ResponseEntity.ok(accountService.getAccount(id));
-    }
 }
