@@ -1,81 +1,89 @@
+import { Client } from '@stomp/stompjs';
+
 class WebSocketService {
-    constructor() {
-        this.socket = null;
-        this.reconnectAttempts = 0;
-        this.maxReconnectAttempts = 5;
-        this.reconnectDelay = 3000;
-    }
+  constructor() {
+    this.client = null;
+    this.subscription = null;
+  }
 
-    // websocket connection
-    connect(url, onMessageCallback, onErrorCallback) {
-        try {
-            this.socket = new WebSocket(url);
+  connect(customerId, onMessage, onError) {
+    // Create STOMP client with native WebSocket (no SockJS)
+    this.client = new Client({
+      brokerURL: 'ws://localhost:8080/ws',
+      
+      connectHeaders: {},
+      
+      debug: (str) => {
+        console.log('STOMP Debug:', str);
+      },
+      
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
 
-            // successful connection
-            this.socket.onopen = () => {
-                console.log('websocket connected to: ', url);
-                this.reconnectAttempts = 0;
+      onConnect: (frame) => {
+        console.log('STOMP Connected:', frame);
+        
+        // Subscribe to customer-specific payment updates
+        this.subscription = this.client.subscribe(
+          `/topic/payments/${customerId}`,
+          (message) => {
+            try {
+              const payment = JSON.parse(message.body);
+              console.log('Received payment:', payment);
+              onMessage(payment);
+            } catch (error) {
+              console.error('Error parsing payment message:', error);
+              onError(error);
             }
+          }
+        );
+        
+        console.log(`Subscribed to /topic/payments/${customerId}`);
+      },
 
-            // new payment arrives
-            this.socket.onmessage = (event) => {
-                try {
-                    const dataReceived = JSON.parse(event.data);
-                    console.log('payment received: ', data);
-                    onMessageCallback(data);
-                } catch (error) {
-                    console.error('Error parsing websocket message: ', error);
-                }
-            }
+      onStompError: (frame) => {
+        console.error('STOMP Error:', frame);
+        onError(new Error(frame.headers.message || 'WebSocket error'));
+      },
 
-            // error
-            this.socket.onerror = (error) => {
-                console.error('websocket error: ', error);
-                if (onErrorCallback) {
-                    onErrorCallback(error);
-                }
-            }
+      onWebSocketError: (event) => {
+        console.error('WebSocket Error:', event);
+        onError(new Error('WebSocket connection error'));
+      },
 
-            // connection closes, reconnect attempt
-            this.socket.onclose = () => {
-                console.log('websocket has disconnected');
-                this.attemptReconnect(url, onMessageCallback, onErrorCallback);
-            };
-        } catch (error) {
-            console.error('failed to create websocket connection', error);
-        }
+      onDisconnect: () => {
+        console.log('STOMP Disconnected');
+      }
+    });
+
+    this.client.activate();
+  }
+
+  disconnect() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = null;
     }
-
-    // helper method to attempt reconnecting
-    attemptReconnect(url, onMessageCallback, onErrorCallback) {
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
-            this.reconnectAttempts++;
-            console.log(`attempting to reconnect, attempt (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
-
-            setTimeout(() => {
-                this.connect(url, onMessageCallback, onErrorCallback);
-            }, this.reconnectDelay);
-        } else {
-            console.error('max reconnect attempts reached. please refresh the page.')
-        }
+    
+    if (this.client) {
+      this.client.deactivate();
+      this.client = null;
     }
+    
+    console.log('WebSocket disconnected');
+  }
 
-    // disconnect
-    disconnect() {
-        if (this.socket) {
-            this.socket.close();
-            this.socket = null;
-            console.log('websocket has been manually disconnected')
-        }
+  send(destination, message) {
+    if (this.client && this.client.connected) {
+      this.client.publish({
+        destination: destination,
+        body: JSON.stringify(message)
+      });
+    } else {
+      console.error('Cannot send message: WebSocket not connected');
     }
-
-    send(data) {
-        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify(data));
-        } else {
-            console.error('websocket is not connected, cannot send any data.');
-        }
-    }
+  }
 }
 
 export default new WebSocketService();

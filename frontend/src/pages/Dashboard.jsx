@@ -1,7 +1,11 @@
 import SideBar from "../components/Sidebar";
-import StripedTable from "../components/StripedTable";
+import PaymentTable from "../components/PaymentTable";
+import { useAuth } from '../context/AuthContext';
+
 
 const Dashboard = () => {
+  const { currentUser, switchUser, logout } = useAuth();
+
   return (
     <div className="flex min-h-screen bg-gray-950">
       <SideBar />
@@ -57,7 +61,7 @@ const Dashboard = () => {
 
           {/* Live Feed Section */}
           <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
-            <StripedTable />
+            <PaymentTable currentCustomer={currentUser}/>
           </div>
         </div>
       </div>

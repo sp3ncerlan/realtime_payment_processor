@@ -4,33 +4,33 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080
 
 const paymentService = {
   // Get all payments
-  getAllPayments: async () => {
+  getCustomerPayments: async (customerId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/payments`);
+      const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      console.error('Error fetching customer payments:', error);
       throw error;
     }
   },
 
   // Get recent payments (last N)
-  getRecentPayments: async (limit = 8) => {
+  getRecentCustomerPayments: async (customerId, limit = 8) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/payments/recent`, {
+      const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}/recent`, {
         params: { limit }
-      });
+      });   
       return response.data;
     } catch (error) {
-      console.error('Error fetching recent payments:', error);
+      console.error('Error fetching recent customer payments:', error);
       throw error;
     }
   },
 
-  // Get payment by ID
-  getPaymentById: async (id) => {
+  // Get payment by ID belonging to customer
+  getPaymentById: async (customerId, paymentId) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/payments/${id}`);
+      const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}/payment/${paymentId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching payment:', error);
@@ -39,9 +39,9 @@ const paymentService = {
   },
 
   // Send money (create new payment)
-  sendMoney: async (paymentData) => {
+  sendMoney: async (customerId, paymentData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/payments`, paymentData);
+      const response = await axios.post(`${API_BASE_URL}/payments/customer/${customerId}`, paymentData);
       return response.data;
     } catch (error) {
       console.error('Error sending money:', error);
