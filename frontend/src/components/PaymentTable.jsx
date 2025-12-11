@@ -2,6 +2,14 @@ import { usePayments } from '../hooks/usePayments';
 import StripedTable from './reusables/StripedTable';
 
 const PaymentTable = ({ currentCustomer }) => {
+  if (!currentCustomer || !currentCustomer.id) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-400">Please select a customer to view payments</p>
+      </div>
+    );
+  }
+
   const { payments, isConnected, isLoading, error } = usePayments(currentCustomer.id);
 
   const columns = [

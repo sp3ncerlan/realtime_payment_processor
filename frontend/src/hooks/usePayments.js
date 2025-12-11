@@ -19,8 +19,7 @@ export const usePayments = (customerId, maxPayments = 50) => {
             const updated = [newPayment, ...prevPayments]
             return updated.slice(0, maxPayments);
         })
-        
-        setIsConnected(true);
+    
         setError(null);
     }, [maxPayments])
 
@@ -29,6 +28,11 @@ export const usePayments = (customerId, maxPayments = 50) => {
         setError('Connection lost, attempting to reconnect...');
         setIsConnected(false);
     }, []);
+
+    const handleConnectionStatus = useCallback((connected) => {
+        console.log('websocket connection status changed', connected);
+        setIsConnected(connected);
+    }, [])
 
     useEffect(() => {
         const initializePayments = async () => {
@@ -46,7 +50,8 @@ export const usePayments = (customerId, maxPayments = 50) => {
                 websocketService.connect(
                     customerId,
                     handleNewPayment,
-                    handleWebSocketError
+                    handleWebSocketError,
+                    handleConnectionStatus
                 );
 
                 setIsLoading(false);
@@ -62,8 +67,9 @@ export const usePayments = (customerId, maxPayments = 50) => {
         return () => {
             console.log('Cleaning up websocket connection');
             websocketService.disconnect();
+            setIsConnected(false);
         }
-    }, [customerId, handleNewPayment, handleWebSocketError]);
+    }, [customerId, handleNewPayment, handleWebSocketError, handleConnectionStatus]);
 
     return {
         payments,

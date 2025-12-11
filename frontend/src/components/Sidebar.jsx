@@ -11,30 +11,25 @@ const SideBar = () => {
 
     useEffect(() => {
         loadCustomers();
-    }, [])
+    }, []);
 
     const loadCustomers = async () => {
         try {
             setIsLoadingCustomers(true);
-            console.log('fetching customers from service')
-
             const data = await customerService.getAllCustomers();
-            console.log('customers are loaded', data);
             setCustomers(data);
 
             if (!currentUser && data.length > 0) {
-                console.log('automatically selecting first customer', data[0]);
                 switchUser(data[0]);
             }
         } catch (err) {
-            console.error('failed to load customers: ', err);
+            console.error('Failed to load customers:', err);
         } finally {
             setIsLoadingCustomers(false);
         }
     }
 
     const handleCustomerSwitch = (customer) => {
-        console.log('user has clicked on the customer: ', customer);
         switchUser(customer);
         setShowCustomerMenu(false);
     }
@@ -103,7 +98,7 @@ const SideBar = () => {
                         <div className="absolute bottom-full left-0 w-full bg-gray-800 border border-gray-700 rounded-t-lg shadow-lg max-h-64 overflow-y-auto">
                             {customers.map((customer) => (
                                 <button
-                                    key={customer.customer_id}
+                                    key={customer.id}
                                     onClick={() => handleCustomerSwitch(customer)}
                                     className={`w-full text-left p-3 hover:bg-gray-700 transition-colors border-b border-gray-700 last:border-b-0 ${
                                         currentUser?.customer_id === customer.customer_id ? 'bg-gray-700' : ''
