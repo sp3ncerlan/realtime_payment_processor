@@ -1,6 +1,7 @@
 package com.spencer.payments.repository;
 
-import com.spencer.payments.entity.Customer;
+import com.spencer.payments.customer.entity.Customer;
+import com.spencer.payments.customer.repository.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
