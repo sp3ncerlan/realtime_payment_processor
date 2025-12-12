@@ -1,12 +1,12 @@
 package com.spencer.payments.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spencer.payments.payment.dto.request.PaymentRequestDTO;
-import com.spencer.payments.account.entity.Account;
-import com.spencer.payments.customer.entity.Customer;
-import com.spencer.payments.account.repository.AccountRepository;
-import com.spencer.payments.customer.repository.CustomerRepository;
-import com.spencer.payments.payment.repository.PaymentRepository;
+import com.spencer.payments.dto.request.PaymentRequestDTO;
+import com.spencer.payments.entity.Account;
+import com.spencer.payments.entity.Customer;
+import com.spencer.payments.repository.AccountRepository;
+import com.spencer.payments.repository.CustomerRepository;
+import com.spencer.payments.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
