@@ -43,11 +43,14 @@ Content-Type: application/json
   "sourceAccountId": "{{sourceAccountId}}",
   "destinationAccountId": "{{destAccountId}}",
   "amount": 100.00,
-  "currency": "USD"
 }
+  "currency": "USD"
 
 ### Check Source Account Balance (Should be $900)
 GET http://localhost:8080/api/accounts/{{sourceAccountId}}
 
 ### Check Destination Account Balance (Should be $150)
 GET http://localhost:8080/api/accounts/{{destAccountId}}
+
+### Check for all customers
+GET http://localhost:8080/api/customers
