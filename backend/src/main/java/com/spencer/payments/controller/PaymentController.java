@@ -20,11 +20,16 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<PaymentResponseDTO>> getCustomerPayments(@PathVariable UUID customerId) {
-        List<PaymentResponseDTO> payments = paymentService.getPaymentsByCustomerId(customerId);
+    @GetMapping("/customer/{accountId}")
+    public ResponseEntity<List<PaymentResponseDTO>> getCustomerPayments(@PathVariable UUID accountId) {
+        List<PaymentResponseDTO> payments = paymentService.getPaymentsByAccountId(accountId);
 
         return ResponseEntity.ok(payments);
+    }
+
+    @GetMapping("/accounts/{accountId}")
+    public ResponseEntity<Integer> getTotalTransactions(@PathVariable UUID accountId) {
+        return ResponseEntity.ok(paymentService.getTotalTransactions(accountId));
     }
 
     @PostMapping("/customer/{customerId}")

@@ -24,8 +24,12 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentWebSocketController paymentWebSocketController;
 
-    public List<PaymentResponseDTO> getPaymentsByCustomerId(UUID customerId) {
-        List<Payment> payments =  paymentRepository.findByCustomerId(customerId);
+    public Integer getTotalTransactions(UUID accountId) {
+        return paymentRepository.countByAccountId(accountId);
+    }
+
+    public List<PaymentResponseDTO> getPaymentsByAccountId(UUID customerId) {
+        List<Payment> payments =  paymentRepository.findByAccountId(customerId);
 
         return payments.stream()
                 .map(this::mapToDTO)
@@ -71,7 +75,7 @@ public class PaymentService {
             throw e;
         }
 
-        paymentWebSocketController.sendPaymentUpdate(new PaymentResponseDTO(
+        paymentWebSocketController.sendPaymentUpdate(customerId, new PaymentResponseDTO(
                 payment.getId(),
                 payment.getSourceAccount().getId(),
                 payment.getDestinationAccount().getId(),

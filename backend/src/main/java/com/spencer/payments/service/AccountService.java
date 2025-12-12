@@ -6,10 +6,14 @@ import com.spencer.payments.entity.Account;
 import com.spencer.payments.entity.Customer;
 import com.spencer.payments.repository.AccountRepository;
 import com.spencer.payments.repository.CustomerRepository;
+import com.spencer.payments.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -19,6 +23,13 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final CustomerRepository customerRepository;
+    private final PaymentRepository paymentRepository;
+
+    public AccountResponseDTO getAccount(UUID accountId) {
+        return accountRepository.findById(accountId)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
 
     @Transactional
     public AccountResponseDTO createAccount(AccountCreateDTO dto) {
@@ -37,7 +48,11 @@ public class AccountService {
         return mapToDTO(savedAccount);
     }
 
-    private AccountResponseDTO mapToDTO(Account account) {
+    public AccountResponseDTO mapToDTO(Account account) {
+        BigDecimal previousBalance = previousMonthBalance(account.getId());
+        BigDecimal balanceChange = account.getBalance().subtract(previousBalance);
+        BigDecimal changePercentage = calculatePercentageChange(previousBalance, account.getBalance());
+
         return new AccountResponseDTO(
                 account.getId(),
                 account.getCustomer().getId(),
@@ -45,7 +60,37 @@ public class AccountService {
                 account.getAccountType(),
                 account.getCurrency(),
                 account.getBalance(),
-                account.getCreatedAt()
+                account.getCreatedAt(),
+                previousBalance,
+                balanceChange,
+                changePercentage
         );
+    }
+
+    private BigDecimal calculatePercentageChange(BigDecimal oldValue, BigDecimal newValue) {
+        if (oldValue.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return newValue.subtract(oldValue)
+                .divide(oldValue, 4, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal("100"));
+    }
+
+    private BigDecimal previousMonthBalance(UUID accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        BigDecimal currentBalance = account.getBalance();
+
+        OffsetDateTime startOfCurrentMonth = OffsetDateTime.now()
+                .withDayOfMonth(1)
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        BigDecimal currentMonthChange = paymentRepository.calculateMonthlyChange(accountId, startOfCurrentMonth);
+
+        return currentBalance.subtract(currentMonthChange);
     }
 }

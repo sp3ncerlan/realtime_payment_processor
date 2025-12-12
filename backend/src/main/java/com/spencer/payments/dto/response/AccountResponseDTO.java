@@ -13,5 +13,8 @@ public record AccountResponseDTO(
         AccountType accountType,
         String currency,
         BigDecimal balance,
-        OffsetDateTime createdAt
+        OffsetDateTime createdAt,
+        BigDecimal previousMonthBalance,
+        BigDecimal balanceChange,
+        BigDecimal balanceChangePercentage
 ) {}

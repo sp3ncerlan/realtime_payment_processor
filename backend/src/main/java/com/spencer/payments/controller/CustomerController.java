@@ -7,6 +7,7 @@ import com.spencer.payments.entity.Account;
 import com.spencer.payments.entity.Customer;
 import com.spencer.payments.repository.AccountRepository;
 import com.spencer.payments.repository.CustomerRepository;
+import com.spencer.payments.service.AccountService;
 import com.spencer.payments.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final AccountService accountService;
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
 
@@ -61,15 +63,7 @@ public class CustomerController {
         List<Account> accounts = accountRepository.findByCustomerId(customerId);
 
         List<AccountResponseDTO> accountDTOs = accounts.stream()
-                .map(account -> new AccountResponseDTO(
-                        account.getId(),
-                        account.getCustomer().getId(),
-                        account.getAccountNumber(),
-                        account.getAccountType(),
-                        account.getCurrency(),
-                        account.getBalance(),
-                        account.getCreatedAt()
-                ))
+                .map(accountService::mapToDTO)
                 .toList();
 
         return ResponseEntity.ok(accountDTOs);
