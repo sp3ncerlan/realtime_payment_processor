@@ -13,17 +13,17 @@ class WebSocketService {
 
             connectHeaders: {},
 
-            debug: (str) => {
-                console.log('STOMP Debug:', str);
-            },
+            debug: () => {},
 
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
 
             onConnect: (frame) => {
-                console.log('STOMP Connected:', frame);
-
+                if (!this.client || !this.client.connected) {
+                    return;
+                }
+                
                 if (onConnectionChange) {
                     onConnectionChange(true);
                 }
@@ -34,30 +34,23 @@ class WebSocketService {
                     (message) => {
                         try {
                             const payment = JSON.parse(message.body);
-                            console.log('Received payment:', payment);
                             onMessage(payment);
                         } catch (error) {
-                            console.error('Error parsing payment message:', error);
                             onError(error);
                         }
                     }
                 );
-
-                console.log(`Subscribed to /topic/payments/${customerId}`);
             },
 
             onStompError: (frame) => {
-                console.error('STOMP Error:', frame);
                 onError(new Error(frame.headers.message || 'WebSocket error'));
             },
 
             onWebSocketError: (event) => {
-                console.error('WebSocket Error:', event);
                 onError(new Error('WebSocket connection error'));
             },
 
             onDisconnect: () => {
-                console.log('STOMP Disconnected');
                 if (onConnectionChange) {
                     onConnectionChange(false);
                 }
@@ -77,8 +70,6 @@ class WebSocketService {
             this.client.deactivate();
             this.client = null;
         }
-
-        console.log('WebSocket disconnected');
     }
 
     send(destination, message) {
@@ -87,8 +78,6 @@ class WebSocketService {
                 destination: destination,
                 body: JSON.stringify(message)
             });
-        } else {
-            console.error('Cannot send message: WebSocket not connected');
         }
     }
 }

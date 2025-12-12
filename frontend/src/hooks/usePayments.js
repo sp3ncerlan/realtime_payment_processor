@@ -2,19 +2,13 @@ import { useCallback, useState, useEffect } from "react";
 import paymentService from "../services/paymentService";
 import websocketService from "../services/websocketService";
 
-export const usePayments = (customerId, maxPayments = 50) => {
+export const usePayments = (accountId, maxPayments = 50) => {
     const [payments, SetPayments] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    if (!customerId) {
-        throw new Error('customerId is required for usePayments hook')
-    }
-
     const handleNewPayment = useCallback((newPayment) => {
-        console.log('adding new payment to list: ', newPayment);
-
         SetPayments((prevPayments) => {
             const updated = [newPayment, ...prevPayments]
             return updated.slice(0, maxPayments);
@@ -24,31 +18,32 @@ export const usePayments = (customerId, maxPayments = 50) => {
     }, [maxPayments])
 
     const handleWebSocketError = useCallback((error) => {
-        console.error('websocket error: ', error)
         setError('Connection lost, attempting to reconnect...');
         setIsConnected(false);
     }, []);
 
     const handleConnectionStatus = useCallback((connected) => {
-        console.log('websocket connection status changed', connected);
         setIsConnected(connected);
     }, [])
 
     useEffect(() => {
+        if (!accountId) {
+            setIsLoading(false);
+            return;
+        }
+
         const initializePayments = async () => {
             try {
                 setIsLoading(true);
-                console.log('Loading initial payments for customer:', customerId)
 
                 // Fetch payments from REST API
-                const initialPayments = await paymentService.getCustomerPayments(customerId);
-                console.log('Initial payments loaded:', initialPayments);
+                const initialPayments = await paymentService.getCustomerPayments(accountId);
+                console.log(initialPayments);
                 SetPayments(initialPayments);
 
                 // Connect to STOMP WebSocket for real-time updates
-                console.log('Connecting to STOMP WebSocket for customer:', customerId)
                 websocketService.connect(
-                    customerId,
+                    accountId,
                     handleNewPayment,
                     handleWebSocketError,
                     handleConnectionStatus
@@ -56,7 +51,6 @@ export const usePayments = (customerId, maxPayments = 50) => {
 
                 setIsLoading(false);
             } catch (err) {
-                console.error('Failed to initialize payments:', err)
                 setError('Failed to load payments, please refresh the page.');
                 setIsLoading(false);
             }
@@ -65,14 +59,15 @@ export const usePayments = (customerId, maxPayments = 50) => {
         initializePayments();
 
         return () => {
-            console.log('Cleaning up websocket connection');
             websocketService.disconnect();
             setIsConnected(false);
         }
-    }, [customerId, handleNewPayment, handleWebSocketError, handleConnectionStatus]);
+    }, [accountId, handleNewPayment, handleWebSocketError, handleConnectionStatus]);
 
     return {
         payments,
+        totalPayments: payments.length,
+        totalPendingPayments: payments.filter(payment => payment.status === 'PENDING').length,
         isConnected,
         isLoading,
         error,

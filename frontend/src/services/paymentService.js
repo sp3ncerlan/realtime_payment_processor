@@ -9,7 +9,6 @@ const paymentService = {
       const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching customer payments:', error);
       throw error;
     }
   },
@@ -22,7 +21,6 @@ const paymentService = {
       });   
       return response.data;
     } catch (error) {
-      console.error('Error fetching recent customer payments:', error);
       throw error;
     }
   },
@@ -33,7 +31,6 @@ const paymentService = {
       const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}/payment/${paymentId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching payment:', error);
       throw error;
     }
   },
@@ -44,7 +41,6 @@ const paymentService = {
       const response = await axios.post(`${API_BASE_URL}/payments/customer/${customerId}`, paymentData);
       return response.data;
     } catch (error) {
-      console.error('Error sending money:', error);
       throw error;
     }
   },

@@ -1,17 +1,71 @@
 import SideBar from "../components/Sidebar";
 import PaymentTable from "../components/PaymentTable";
 import { useAuth } from '../context/AuthContext';
+import { useAccountDetails, useCustomerAccount } from "../hooks/useCustomerAccount";
+import { usePayments } from "../hooks/usePayments";
+import { useEffect } from "react";
+import CountUp from "react-countup";
 
 
 const Dashboard = () => {
-  const { currentUser, switchUser, logout } = useAuth();
+  const { currentUser, selectedAccount, switchAccount } = useAuth();
+  const { accounts, allAccounts, isLoading: accountsLoading } = useCustomerAccount(currentUser?.id);
+  const { accountData, isLoading: detailsLoading, error } = useAccountDetails(selectedAccount?.id);
+  const { payments, totalPayments, totalPendingPayments, isConnected, isLoading: paymentsLoading, error: paymentError } = usePayments(selectedAccount?.id);
+
+  console.log(accountData)
+
+  // Ensure the first account is selected if none is selected
+  useEffect(() => {
+    if (accounts.length > 0 && !selectedAccount) {
+      switchAccount(accounts[0]);
+    }
+  }, [accounts, selectedAccount, switchAccount]);
+
+  // Trigger updates when the selected account changes
+  useEffect(() => {
+    if (selectedAccount) {
+      console.log(`Selected account updated: ${selectedAccount.id}`);
+    }
+  }, [selectedAccount]);
+
+  const formatCurrency = (amount) => {
+    if (amount == null) return '$0.00';
+    return `$${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const formatAccountNumber = (accountNumber) => {
+    if (!accountNumber) return '****-****';
+    return `****-${accountNumber.slice(-4)}`;
+  };
+
+  const formatActiveDate = (isoString) => {
+    if (!isoString) return 'N/A';
+
+    const date = new Date(isoString);
+
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  const formatPercentage = (value) => {
+    if (value == null) return '0.0%';
+    const sign = value >= 0 ? '+' : '';
+    return `${sign}${Number(value).toFixed(1)}%`;
+  };
 
   return (
-    <div className="flex min-h-screen bg-gray-950">
-      <SideBar />
+    <div className="flex h-screen bg-gray-950">
+      {/* Sidebar */}
+      <div className="flex-shrink-0 h-screen">
+        <SideBar />
+      </div>
 
-      <div className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
+      {/* Main Content */}
+      <div className="flex-1 p-8 flex flex-col h-screen">
+        <div className="max-w-7xl mx-auto flex-1 flex flex-col">
           <h1 className="text-3xl font-bold text-gray-100 mb-2">Payment Processor Dashboard</h1>
           <p className="text-gray-400 mb-8">Welcome to your real-time payment system.</p>
 
@@ -24,44 +78,60 @@ const Dashboard = () => {
               {/* Balance Card */}
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Available Balance</p>
-                <p className="text-3xl font-bold text-gray-100">$12,450.00</p>
-                <p className="text-sm text-green-500 mt-2">+2.5% from last month</p>
+                <p className="text-3xl font-bold text-gray-100">
+                    <CountUp
+                    end={accountData?.balance || 0}
+                    duration={1}
+                    decimals={2}
+                    prefix="$"
+                    separator=","
+                  />
+                </p>
+                <p className={`text-sm mt-2 ${
+                  accountData?.balanceChangePercentage > 0 ? 'text-green-500' : 
+                  accountData?.balanceChangePercentage < 0 ? 'text-red-500' :
+                  'text-gray-400'
+                }`}>{formatPercentage(accountData?.balanceChangePercentage)} since last month</p>
               </div>
 
               {/* Account Number Card */}
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Account Number</p>
-                <p className="text-2xl font-mono font-semibold text-gray-100">****-1234</p>
-                <p className="text-sm text-gray-500 mt-2">Active since Jan 2024</p>
+                <p className="text-2xl font-mono font-semibold text-gray-100">{formatAccountNumber(accountData?.accountNumber)}</p>
+                <p className="text-sm text-gray-500 mt-2">Active since {formatActiveDate(accountData?.createdAt)}</p>
               </div>
 
               {/* Transaction Count Card */}
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Total Transactions</p>
-                <p className="text-3xl font-bold text-gray-100">156</p>
-                <p className="text-sm text-blue-400 mt-2">8 pending</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions Section */}
-          <div className="mb-8">
-            <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
-              <h3 className="text-xl font-semibold text-gray-200 mb-4">Quick Actions</h3>
-              <div className="flex gap-4">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
-                  Send Money
-                </button>
-                <button className="bg-gray-800 hover:bg-gray-700 text-gray-100 font-medium py-2 px-4 border border-gray-700 rounded-md transition-colors">
-                  View History
-                </button>
+                <p className="text-3xl font-bold text-gray-100">{totalPayments}</p>
+                <p className="text-sm text-blue-400 mt-2">{totalPendingPayments} pending</p>
               </div>
             </div>
           </div>
 
           {/* Live Feed Section */}
-          <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
-            <PaymentTable currentCustomer={currentUser}/>
+          <div className="flex-1 flex flex-col justify-between">
+            <div
+              className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800 overflow-y-auto"
+              style={{
+                maxHeight: `${Math.min(payments.length * 4 + 20, 60)}vh`, // Dynamically adjust height
+              }}
+            >
+              <PaymentTable
+                currentCustomer={currentUser}
+                allAccounts={allAccounts}
+                accounts={accounts}
+                currentAccountData={accountData}
+                payments={payments}
+                isConnected={isConnected}
+                isLoading={paymentsLoading}
+                error={paymentError}
+              />
+            </div>
+
+            {/* Dynamic Gap */}
+            <div className="h-12"></div>
           </div>
         </div>
       </div>
