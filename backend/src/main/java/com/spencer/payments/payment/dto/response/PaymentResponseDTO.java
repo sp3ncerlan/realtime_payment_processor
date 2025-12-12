@@ -1,6 +1,7 @@
-package com.spencer.payments.dto.response;
+package com.spencer.payments.payment.dto.response;
 
-import com.spencer.payments.entity.PaymentStatus;
+import com.spencer.payments.account.entity.AccountType;
+import com.spencer.payments.payment.entity.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -10,6 +11,8 @@ public record PaymentResponseDTO(
         UUID id,
         UUID sourceAccountId,
         UUID destAccountId,
+        AccountType sourceAccountType,
+        AccountType destAccountType,
         String sourceName,
         String destName,
         BigDecimal amount,

@@ -1,4 +1,4 @@
-package com.spencer.payments.exception;
+package com.spencer.payments.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

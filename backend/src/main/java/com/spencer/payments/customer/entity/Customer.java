@@ -1,4 +1,4 @@
-package com.spencer.payments.entity;
+package com.spencer.payments.customer.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

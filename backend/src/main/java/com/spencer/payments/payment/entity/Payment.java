@@ -1,5 +1,6 @@
-package com.spencer.payments.entity;
+package com.spencer.payments.payment.entity;
 
+import com.spencer.payments.account.entity.Account;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

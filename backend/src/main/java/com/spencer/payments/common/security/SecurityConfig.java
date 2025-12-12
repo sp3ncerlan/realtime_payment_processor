@@ -1,4 +1,4 @@
-package com.spencer.payments.security;
+package com.spencer.payments.common.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

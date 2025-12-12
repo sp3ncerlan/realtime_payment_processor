@@ -1,6 +1,6 @@
-package com.spencer.payments.dto.create;
+package com.spencer.payments.account.dto.create;
 
-import com.spencer.payments.entity.AccountType;
+import com.spencer.payments.account.entity.AccountType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;

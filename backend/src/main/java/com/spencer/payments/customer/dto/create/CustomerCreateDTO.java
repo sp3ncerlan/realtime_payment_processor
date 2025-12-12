@@ -1,4 +1,4 @@
-package com.spencer.payments.dto.create;
+package com.spencer.payments.customer.dto.create;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

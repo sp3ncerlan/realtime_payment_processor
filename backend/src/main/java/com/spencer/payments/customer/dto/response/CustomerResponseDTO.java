@@ -1,4 +1,4 @@
-package com.spencer.payments.dto.response;
+package com.spencer.payments.customer.dto.response;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

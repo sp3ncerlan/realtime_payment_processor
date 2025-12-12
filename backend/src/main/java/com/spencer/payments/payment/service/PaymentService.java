@@ -1,19 +1,18 @@
-package com.spencer.payments.service;
+package com.spencer.payments.payment.service;
 
-import com.spencer.payments.controller.PaymentWebSocketController;
-import com.spencer.payments.dto.response.PaymentResponseDTO;
-import com.spencer.payments.entity.Account;
-import com.spencer.payments.entity.Payment;
-import com.spencer.payments.entity.PaymentStatus;
-import com.spencer.payments.repository.AccountRepository;
-import com.spencer.payments.repository.PaymentRepository;
+import com.spencer.payments.payment.controller.PaymentWebSocketController;
+import com.spencer.payments.payment.dto.response.PaymentResponseDTO;
+import com.spencer.payments.account.entity.Account;
+import com.spencer.payments.payment.entity.Payment;
+import com.spencer.payments.payment.entity.PaymentStatus;
+import com.spencer.payments.account.repository.AccountRepository;
+import com.spencer.payments.payment.repository.PaymentRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -79,6 +78,8 @@ public class PaymentService {
                 payment.getId(),
                 payment.getSourceAccount().getId(),
                 payment.getDestinationAccount().getId(),
+                payment.getSourceAccount().getAccountType(),
+                payment.getDestinationAccount().getAccountType(),
                 payment.getSourceAccount().getCustomer().getName(),
                 payment.getDestinationAccount().getCustomer().getName(),
                 payment.getAmount(),
@@ -95,6 +96,8 @@ public class PaymentService {
                 payment.getId(),
                 payment.getSourceAccount().getId(),
                 payment.getDestinationAccount().getId(),
+                payment.getSourceAccount().getAccountType(),
+                payment.getDestinationAccount().getAccountType(),
                 payment.getSourceAccount().getCustomer().getName(),
                 payment.getDestinationAccount().getCustomer().getName(),
                 payment.getAmount(),

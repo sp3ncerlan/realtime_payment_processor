@@ -1,9 +1,9 @@
-package com.spencer.payments.service;
+package com.spencer.payments.customer.service;
 
-import com.spencer.payments.dto.create.CustomerCreateDTO;
-import com.spencer.payments.dto.response.CustomerResponseDTO;
-import com.spencer.payments.entity.Customer;
-import com.spencer.payments.repository.CustomerRepository;
+import com.spencer.payments.customer.dto.create.CustomerCreateDTO;
+import com.spencer.payments.customer.dto.response.CustomerResponseDTO;
+import com.spencer.payments.customer.entity.Customer;
+import com.spencer.payments.customer.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,9 +1,13 @@
-package com.spencer.payments.config;
+package com.spencer.payments.common.config;
 
-import com.spencer.payments.entity.*;
-import com.spencer.payments.repository.AccountRepository;
-import com.spencer.payments.repository.CustomerRepository;
-import com.spencer.payments.repository.PaymentRepository;
+import com.spencer.payments.account.entity.Account;
+import com.spencer.payments.account.entity.AccountType;
+import com.spencer.payments.customer.entity.Customer;
+import com.spencer.payments.account.repository.AccountRepository;
+import com.spencer.payments.customer.repository.CustomerRepository;
+import com.spencer.payments.payment.entity.Payment;
+import com.spencer.payments.payment.entity.PaymentStatus;
+import com.spencer.payments.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

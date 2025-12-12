@@ -1,9 +1,8 @@
-package com.spencer.payments.controller;
+package com.spencer.payments.payment.controller;
 
-import com.spencer.payments.dto.request.PaymentRequestDTO;
-import com.spencer.payments.dto.response.PaymentResponseDTO;
-import com.spencer.payments.entity.Payment;
-import com.spencer.payments.service.PaymentService;
+import com.spencer.payments.payment.dto.request.PaymentRequestDTO;
+import com.spencer.payments.payment.dto.response.PaymentResponseDTO;
+import com.spencer.payments.payment.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

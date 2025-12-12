@@ -1,6 +1,6 @@
-package com.spencer.payments.dto.response;
+package com.spencer.payments.account.dto.response;
 
-import com.spencer.payments.entity.AccountType;
+import com.spencer.payments.account.entity.AccountType;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;

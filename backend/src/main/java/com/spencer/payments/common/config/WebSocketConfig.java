@@ -1,4 +1,4 @@
-package com.spencer.payments.config;
+package com.spencer.payments.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

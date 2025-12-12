@@ -1,4 +1,4 @@
-package com.spencer.payments.dto.request;
+package com.spencer.payments.payment.dto.request;
 
 import jakarta.validation.constraints.*;
 

@@ -1,17 +1,16 @@
-package com.spencer.payments.controller;
+package com.spencer.payments.customer.controller;
 
-import com.spencer.payments.dto.create.CustomerCreateDTO;
-import com.spencer.payments.dto.response.AccountResponseDTO;
-import com.spencer.payments.dto.response.CustomerResponseDTO;
-import com.spencer.payments.entity.Account;
-import com.spencer.payments.entity.Customer;
-import com.spencer.payments.repository.AccountRepository;
-import com.spencer.payments.repository.CustomerRepository;
-import com.spencer.payments.service.AccountService;
-import com.spencer.payments.service.CustomerService;
+import com.spencer.payments.customer.dto.create.CustomerCreateDTO;
+import com.spencer.payments.account.dto.response.AccountResponseDTO;
+import com.spencer.payments.customer.dto.response.CustomerResponseDTO;
+import com.spencer.payments.account.entity.Account;
+import com.spencer.payments.customer.entity.Customer;
+import com.spencer.payments.account.repository.AccountRepository;
+import com.spencer.payments.customer.repository.CustomerRepository;
+import com.spencer.payments.account.service.AccountService;
+import com.spencer.payments.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

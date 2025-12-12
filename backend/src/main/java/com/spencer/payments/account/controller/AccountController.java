@@ -1,14 +1,14 @@
-package com.spencer.payments.controller;
+package com.spencer.payments.account.controller;
 
-import com.spencer.payments.dto.create.AccountCreateDTO;
-import com.spencer.payments.dto.response.AccountResponseDTO;
-import com.spencer.payments.service.AccountService;
+import com.spencer.payments.account.dto.create.AccountCreateDTO;
+import com.spencer.payments.account.dto.response.AccountResponseDTO;
+import com.spencer.payments.account.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,6 +17,8 @@ import java.util.UUID;
 public class AccountController {
 
     private final AccountService accountService;
+
+
 
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponseDTO> getAccount(@PathVariable UUID accountId) {
