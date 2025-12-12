@@ -3,7 +3,6 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 const paymentService = {
-  // Get all payments
   getCustomerPayments: async (customerId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}`);
@@ -13,7 +12,6 @@ const paymentService = {
     }
   },
 
-  // Get recent payments (last N)
   getRecentCustomerPayments: async (customerId, limit = 8) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}/recent`, {
@@ -25,7 +23,6 @@ const paymentService = {
     }
   },
 
-  // Get payment by ID belonging to customer
   getPaymentById: async (customerId, paymentId) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/payments/customer/${customerId}/payment/${paymentId}`);
@@ -35,7 +32,6 @@ const paymentService = {
     }
   },
 
-  // Send money (create new payment)
   sendMoney: async (customerId, paymentData) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/payments/customer/${customerId}`, paymentData);

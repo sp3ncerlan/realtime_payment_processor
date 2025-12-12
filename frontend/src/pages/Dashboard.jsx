@@ -13,16 +13,14 @@ const Dashboard = () => {
   const { accountData, isLoading: detailsLoading, error } = useAccountDetails(selectedAccount?.id);
   const { payments, totalPayments, totalPendingPayments, isConnected, isLoading: paymentsLoading, error: paymentError } = usePayments(selectedAccount?.id);
 
-  console.log(accountData)
+  console.log(allAccounts);
 
-  // Ensure the first account is selected if none is selected
   useEffect(() => {
     if (accounts.length > 0 && !selectedAccount) {
       switchAccount(accounts[0]);
     }
   }, [accounts, selectedAccount, switchAccount]);
 
-  // Trigger updates when the selected account changes
   useEffect(() => {
     if (selectedAccount) {
       console.log(`Selected account updated: ${selectedAccount.id}`);
@@ -57,25 +55,25 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-950">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gray-950 overflow-x-hidden">
+      
       <div className="flex-shrink-0 h-screen">
         <SideBar />
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-8 flex flex-col h-screen">
+      
+      <div className="flex-1 p-8 flex flex-col min-h-screen">
         <div className="max-w-7xl mx-auto flex-1 flex flex-col">
           <h1 className="text-3xl font-bold text-gray-100 mb-2">Payment Processor Dashboard</h1>
           <p className="text-gray-400 mb-8">Welcome to your real-time payment system.</p>
 
-          {/* Account Overview Section */}
+          
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-200 mb-4">Account Overview</h2>
 
-            {/* Stats Grid */}
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* Balance Card */}
+              
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Available Balance</p>
                 <p className="text-3xl font-bold text-gray-100">
@@ -94,14 +92,14 @@ const Dashboard = () => {
                 }`}>{formatPercentage(accountData?.balanceChangePercentage)} since last month</p>
               </div>
 
-              {/* Account Number Card */}
+              
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Account Number</p>
                 <p className="text-2xl font-mono font-semibold text-gray-100">{formatAccountNumber(accountData?.accountNumber)}</p>
                 <p className="text-sm text-gray-500 mt-2">Active since {formatActiveDate(accountData?.createdAt)}</p>
               </div>
 
-              {/* Transaction Count Card */}
+              
               <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800">
                 <p className="text-sm font-medium text-gray-400 mb-1">Total Transactions</p>
                 <p className="text-3xl font-bold text-gray-100">{totalPayments}</p>
@@ -110,13 +108,15 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Live Feed Section */}
+          
           <div className="flex-1 flex flex-col justify-between">
             <div
-              className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800 overflow-y-auto"
-              style={{
-                maxHeight: `${Math.min(payments.length * 4 + 20, 60)}vh`, // Dynamically adjust height
-              }}
+              className={`bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-800${payments.length === 0 ? '' : ' flex-1'}`}
+              style={
+                payments.length === 0
+                  ? { minHeight: 'unset', maxHeight: 'unset', height: 'auto', alignSelf: 'flex-start', width: '100%' }
+                  : { minHeight: 0, maxHeight: '100%', overflowY: 'auto', height: '100%' }
+              }
             >
               <PaymentTable
                 currentCustomer={currentUser}
@@ -130,8 +130,8 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Dynamic Gap */}
-            <div className="h-12"></div>
+            
+            
           </div>
         </div>
       </div>

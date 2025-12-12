@@ -1,24 +1,14 @@
 import { usePayments } from '../hooks/usePayments';
 import StripedTable from './reusables/StripedTable';
 
-const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccounts, isConnected, isLoading, error }) => {
-  if (!allAccounts || allAccounts.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-400">Loading accounts...</p>
-      </div>
-    );
-  }
-
+const PaymentTable = ({ currentCustomer, currentAccountData, payments, isConnected, isLoading, error }) => {
   if (!currentCustomer || !currentCustomer.id) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-400">Please select a customer to view payments</p>
       </div>
-    );
+    );  
   }
-
-  console.log(allAccounts);
 
   const columns = [
     { key: 'id', label: 'ID', render: (payment) => payment.id?.substring(0, 8) || 'N/A' },
@@ -26,11 +16,11 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccoun
       key: 'sender',
       label: 'From',
       render: (payment) => {
-        const account = allAccounts.find((acc) => acc.id === payment.sourceAccountId);
+        console.log(payment);
         return (
           <div>
             <p>{payment.sourceName || 'Unknown'}</p>
-            <p className="text-xs text-gray-400">{account?.accountType || 'N/A'}</p>
+            <p className="text-[10px] text-gray-400">{payment.sourceAccountType || 'N/A'}</p>
           </div>
         );
       },
@@ -39,11 +29,10 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccoun
       key: 'recipient',
       label: 'To',
       render: (payment) => {
-        const account = allAccounts.find((acc) => acc.id === payment.destAccountId);
         return (
           <div>
             <p>{payment.destName || 'Unknown'}</p>
-            <p className="text-xs text-gray-400">{account?.accountType || 'N/A'}</p>
+            <p className="text-[10px] text-gray-400">{payment.destAccountType || 'N/A'}</p>
           </div>
         );
       },
@@ -100,7 +89,7 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccoun
 
   return (
     <div>
-      {/* Connection Status */}
+
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-gray-200">Live Payment Feed</h3>
         <div className="flex items-center gap-2">
@@ -109,7 +98,7 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccoun
         </div>
       </div>
 
-      {/* Generic Table */}
+
       <StripedTable
         columns={columns}
         data={payments}
@@ -118,8 +107,8 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, allAccoun
         emptyMessage="No payments yet. Waiting for transactions..."
       />
 
-      {/* Payment Count */}
-      <div className="mt-4 text-sm text-gray-400 text-center">
+
+      <div className="mt-4 text-sm text-gray-400 text-center" style={{ marginBottom: 0, paddingBottom: 0, lineHeight: 1 }}>
         Showing {payments.length} most recent payments
       </div>
     </div>

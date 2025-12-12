@@ -36,12 +36,10 @@ export const usePayments = (accountId, maxPayments = 50) => {
             try {
                 setIsLoading(true);
 
-                // Fetch payments from REST API
                 const initialPayments = await paymentService.getCustomerPayments(accountId);
                 console.log(initialPayments);
                 SetPayments(initialPayments);
 
-                // Connect to STOMP WebSocket for real-time updates
                 websocketService.connect(
                     accountId,
                     handleNewPayment,

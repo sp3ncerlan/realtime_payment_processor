@@ -7,7 +7,6 @@ class WebSocketService {
     }
 
     connect(customerId, onMessage, onError, onConnectionChange) {
-        // Create STOMP client with native WebSocket (no SockJS)
         this.client = new Client({
             brokerURL: 'ws://localhost:8080/ws',
 
@@ -28,7 +27,6 @@ class WebSocketService {
                     onConnectionChange(true);
                 }
 
-                // Subscribe to customer-specific payment updates
                 this.subscription = this.client.subscribe(
                     `/topic/payments/${customerId}`,
                     (message) => {

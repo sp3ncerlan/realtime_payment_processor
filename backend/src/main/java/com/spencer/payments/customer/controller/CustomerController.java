@@ -29,6 +29,7 @@ public class CustomerController {
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
 
+    // returns a list of all customers that exist
     @GetMapping
     public ResponseEntity<List<CustomerResponseDTO>> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
@@ -45,6 +46,7 @@ public class CustomerController {
         return ResponseEntity.ok(customerDTOs);
     }
 
+    // returns a single customer based on their customerId
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponseDTO> getCustomer(@PathVariable UUID customerId) {
         Customer customer = customerRepository.findById(customerId)
@@ -58,6 +60,7 @@ public class CustomerController {
         ));
     }
 
+    // returns all accounts for a single customer based on their customerId
     @GetMapping("/{customerId}/accounts")
     public ResponseEntity<List<AccountResponseDTO>> getCustomerAccounts(@PathVariable UUID customerId) {
         List<Account> accounts = accountRepository.findByCustomerId(customerId);
@@ -69,6 +72,7 @@ public class CustomerController {
         return ResponseEntity.ok(accountDTOs);
     }
 
+    // creates a new customer
     @PostMapping
     public ResponseEntity<CustomerResponseDTO> createCustomer(@Valid @RequestBody CustomerCreateDTO dto) {
         return ResponseEntity.ok(customerService.createCustomer(dto));

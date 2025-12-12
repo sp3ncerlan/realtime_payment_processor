@@ -17,10 +17,8 @@ export const useCustomerAccount = (customerId) => {
         const fetchAccountData = async () => {
             try {
                 setIsLoading(true);
-                const allAccountsList = await accountService.getAllCustomerAccounts();
                 const accountsList = await accountService.getCustomerAccounts(customerId);
 
-                setAllAccounts(allAccountsList);
                 setAccounts(accountsList);
                 setError(null);
             } catch (error) {
@@ -33,7 +31,7 @@ export const useCustomerAccount = (customerId) => {
         fetchAccountData();
     }, [customerId])
 
-    return { accounts, allAccounts, isLoading, error };
+    return { accounts, isLoading, error };
 }
 
 export const useAccountDetails = (accountId) => {
