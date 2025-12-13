@@ -70,11 +70,6 @@ public class PaymentService {
             log.info("Source account balance after: {}", sourceAccount.getBalance());
             log.info("Destination account balance after: {}", destinationAccount.getBalance());
 
-            // Save and flush the updated accounts to ensure changes persist
-            accountRepository.save(sourceAccount);
-            accountRepository.save(destinationAccount);
-            accountRepository.flush();
-
             // mark payment as completed
             payment.setStatus(PaymentStatus.COMPLETED);
             savedPayment = paymentRepository.save(payment);
