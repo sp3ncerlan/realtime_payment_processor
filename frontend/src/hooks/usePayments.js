@@ -2,18 +2,19 @@ import { useCallback, useState, useEffect } from "react";
 import paymentService from "../services/paymentService";
 import websocketService from "../services/websocketService";
 
-export const usePayments = (accountId, maxPayments = 50) => {
+export const usePayments = (accountId, maxPayments = 10) => {
     const [payments, SetPayments] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [latestPaymentId, setLatestPaymentId] = useState(null);
 
     const handleNewPayment = useCallback((newPayment) => {
         SetPayments((prevPayments) => {
             const updated = [newPayment, ...prevPayments]
             return updated.slice(0, maxPayments);
-        })
-    
+        });
+        setLatestPaymentId(newPayment.id);
         setError(null);
     }, [maxPayments])
 
@@ -24,6 +25,7 @@ export const usePayments = (accountId, maxPayments = 50) => {
 
     const handleConnectionStatus = useCallback((connected) => {
         setIsConnected(connected);
+        console.log("websocket connection status: ", connected)
     }, [])
 
     useEffect(() => {
@@ -37,7 +39,6 @@ export const usePayments = (accountId, maxPayments = 50) => {
                 setIsLoading(true);
 
                 const initialPayments = await paymentService.getCustomerPayments(accountId);
-                console.log(initialPayments);
                 SetPayments(initialPayments);
 
                 websocketService.connect(
@@ -69,5 +70,6 @@ export const usePayments = (accountId, maxPayments = 50) => {
         isConnected,
         isLoading,
         error,
+        latestPaymentId,
     }
 }
