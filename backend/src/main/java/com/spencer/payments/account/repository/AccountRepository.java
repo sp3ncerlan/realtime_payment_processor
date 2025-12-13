@@ -17,4 +17,6 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     Optional<Account> findWithLockingById(UUID id);
 
     List<Account> findByCustomerId(UUID customerId);
+
+    Optional<Account> findAccountByAccountNumber(String accountNumber);
 }

@@ -7,6 +7,7 @@ import com.spencer.payments.payment.entity.Payment;
 import com.spencer.payments.payment.entity.PaymentStatus;
 import com.spencer.payments.account.repository.AccountRepository;
 import com.spencer.payments.payment.repository.PaymentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     private final AccountRepository accountRepository;
@@ -58,9 +60,20 @@ public class PaymentService {
                 throw new IllegalStateException("Insufficient funds in source account " + sourceAccountId);
             }
 
+            log.info("Source account balance before: {}", sourceAccount.getBalance());
+            log.info("Destination account balance before: {}", destinationAccount.getBalance());
+
             // perform the debit and credit operations
             sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
             destinationAccount.setBalance(destinationAccount.getBalance().add(amount));
+
+            log.info("Source account balance after: {}", sourceAccount.getBalance());
+            log.info("Destination account balance after: {}", destinationAccount.getBalance());
+
+            // Save and flush the updated accounts to ensure changes persist
+            accountRepository.save(sourceAccount);
+            accountRepository.save(destinationAccount);
+            accountRepository.flush();
 
             // mark payment as completed
             payment.setStatus(PaymentStatus.COMPLETED);
@@ -74,7 +87,9 @@ public class PaymentService {
             throw e;
         }
 
-        paymentWebSocketController.sendPaymentUpdate(customerId, new PaymentResponseDTO(
+        log.info("Sending payment update for accountId: {} with payment status: {}", sourceAccountId, payment.getStatus());
+
+        paymentWebSocketController.sendPaymentUpdate(sourceAccountId, new PaymentResponseDTO(
                 payment.getId(),
                 payment.getSourceAccount().getId(),
                 payment.getDestinationAccount().getId(),

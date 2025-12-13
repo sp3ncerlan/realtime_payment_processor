@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -25,8 +26,21 @@ public class AccountService {
     private final CustomerRepository customerRepository;
     private final PaymentRepository paymentRepository;
 
+    public List<AccountResponseDTO> getAllAccounts() {
+        return accountRepository.findAll()
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
     public AccountResponseDTO getAccount(UUID accountId) {
         return accountRepository.findById(accountId)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    public AccountResponseDTO getAccountByAccountNumber(String accountNumber) {
+        return accountRepository.findAccountByAccountNumber(accountNumber)
                 .map(this::mapToDTO)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
@@ -49,7 +63,7 @@ public class AccountService {
     }
 
     public AccountResponseDTO mapToDTO(Account account) {
-        BigDecimal previousBalance = previousMonthBalance(account.getId());
+        BigDecimal previousBalance = calculatePreviousMonthBalance(account.getId());
         BigDecimal balanceChange = account.getBalance().subtract(previousBalance);
         BigDecimal changePercentage = calculatePercentageChange(previousBalance, account.getBalance());
 
@@ -76,7 +90,7 @@ public class AccountService {
                 .multiply(new BigDecimal("100"));
     }
 
-    private BigDecimal previousMonthBalance(UUID accountId) {
+    private BigDecimal calculatePreviousMonthBalance(UUID accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 

@@ -13,8 +13,8 @@ public class PaymentWebSocketController {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendPaymentUpdate(UUID customerId, PaymentResponseDTO payment) {
-        String destination = "/topic/payments/" + customerId;
+    public void sendPaymentUpdate(UUID accountId, PaymentResponseDTO payment) {
+        String destination = "/topic/payments/" + accountId;
         messagingTemplate.convertAndSend(destination, payment);
     }
 }
