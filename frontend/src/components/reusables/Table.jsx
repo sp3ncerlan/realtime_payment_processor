@@ -1,6 +1,6 @@
 import React from "react";
 
-const StripedTable = ({ columns, data, isLoading, error, emptyMessage }) => {
+const StripedTable = ({ columns, data, isLoading, error, emptyMessage, latestPaymentId }) => {
   if (isLoading) {
     return (
       <div className="text-center py-8">
@@ -18,28 +18,9 @@ const StripedTable = ({ columns, data, isLoading, error, emptyMessage }) => {
     );
   }
 
-  const [maxRows, setMaxRows] = React.useState(10);
-  const tableRef = React.useRef(null);
-
-  React.useEffect(() => {
-    function updateMaxRows() {
-      if (!tableRef.current) return;
-      const headerHeight = 56;
-      const rowHeight = 56;
-      const availableHeight = window.innerHeight - tableRef.current.getBoundingClientRect().top - 32;
-      const rows = Math.floor((availableHeight - headerHeight) / rowHeight);
-      setMaxRows(rows > 0 ? rows : 1);
-    }
-    updateMaxRows();
-    window.addEventListener('resize', updateMaxRows);
-    return () => window.removeEventListener('resize', updateMaxRows);
-  }, []);
-
-  const visibleData = data.slice(0, maxRows);
-
   return (
-    <div className="w-full rounded-lg border border-gray-800" ref={tableRef}>
-      <table className="min-w-full divide-y-2 divide-gray-800 bg-gray-900 text-sm">
+    <div className="w-full rounded-lg border border-gray-800 p-6 pb-2 bg-gray-900">
+      <table className="min-w-full divide-y-2 divide-gray-800 text-sm">
         <thead className="bg-gray-800">
           <tr>
             {columns.map((col) => (
@@ -50,15 +31,18 @@ const StripedTable = ({ columns, data, isLoading, error, emptyMessage }) => {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-800">
-          {visibleData.length === 0 ? (
+          {data.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="text-center py-12 text-gray-400">
                 {emptyMessage || 'No data available'}
               </td>
             </tr>
           ) : (
-            visibleData.map((row, index) => (
-              <tr key={row.id || index} className="hover:bg-gray-800 transition-colors">
+            data.map((row, index) => (
+              <tr
+                key={row.id || index}
+                className={`hover:bg-gray-800 transition-colors ${row.id === latestPaymentId ? 'animate-fade-in' : ''}`}
+              >
                 {columns.map((col) => (
                   <td key={col.key} className="whitespace-nowrap px-4 py-3 text-gray-400">
                     {col.render ? col.render(row) : row[col.key]}

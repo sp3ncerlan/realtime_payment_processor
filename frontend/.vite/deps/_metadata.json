@@ -1,25 +1,46 @@
 {
-  "hash": "d8235e71",
+  "hash": "8ce91f52",
   "configHash": "9d01a493",
-  "lockfileHash": "8b797218",
-  "browserHash": "d6db7784",
+  "lockfileHash": "7416e512",
+  "browserHash": "7e0a5660",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "28f7d550",
+      "fileHash": "a2e57f09",
       "needsInterop": true
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "1f38968c",
+      "fileHash": "5ce2d782",
       "needsInterop": true
+    },
+    "react-countup": {
+      "src": "../../node_modules/react-countup/build/index.js",
+      "file": "react-countup.js",
+      "fileHash": "109ddad2",
+      "needsInterop": true
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "056d954d",
+      "needsInterop": false
+    },
+    "@stomp/stompjs": {
+      "src": "../../node_modules/@stomp/stompjs/esm6/index.js",
+      "file": "@stomp_stompjs.js",
+      "fileHash": "bbe1b797",
+      "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-QT7PNG2D": {
-      "file": "chunk-QT7PNG2D.js"
+    "chunk-3KQLOBNZ": {
+      "file": "chunk-3KQLOBNZ.js"
+    },
+    "chunk-HKJ2B2AA": {
+      "file": "chunk-HKJ2B2AA.js"
     }
   }
 }
