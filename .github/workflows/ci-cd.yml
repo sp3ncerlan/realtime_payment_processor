@@ -20,8 +20,6 @@ jobs:
           POSTGRES_USER: payments_admin
           POSTGRES_PASSWORD: StrongP@ssw0rd123!
           POSTGRES_DB: payments
-        ports:
-          - 5432
         options: >-
           --health-cmd pg_isready -U payments_admin
           --health-interval 10s
@@ -29,8 +27,6 @@ jobs:
           --health-retries 5
       redis:
         image: redis:7
-        ports:
-          - 6379
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,10 +46,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-          POSTGRES_PORT=${{ job.services.postgres.ports[5432] }}
-          echo "Waiting for Postgres to accept connections on localhost:${POSTGRES_PORT}..."
+          echo "Waiting for Postgres to accept connections on service hostname 'postgres'..."
           for i in $(seq 1 30); do
-            pg_isready -h localhost -p "$POSTGRES_PORT" -U payments_admin && { echo "Postgres is ready"; exit 0; } || echo "Waiting... ($i)";
+            pg_isready -h postgres -p 5432 -U payments_admin && { echo "Postgres is ready"; exit 0; } || echo "Waiting... ($i)";
             sleep 2
           done
           echo "Postgres did not become ready in time"; exit 1
@@ -68,11 +63,11 @@ jobs:
 
       - name: Build and test backend
         env:
-          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:${{ job.services.postgres.ports[5432] }}/payments"
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/payments"
           SPRING_DATASOURCE_USERNAME: payments_admin
           SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
-          SPRING_DATA_REDIS_HOST: localhost
-          SPRING_DATA_REDIS_PORT: "${{ job.services.redis.ports[6379] }}"
+          SPRING_DATA_REDIS_HOST: redis
+          SPRING_DATA_REDIS_PORT: "6379"
         run: |
           mvn -B -DskipTests=false clean package
 
