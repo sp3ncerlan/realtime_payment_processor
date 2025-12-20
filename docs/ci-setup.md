@@ -21,7 +21,7 @@ What the workflow does (file: `.github/workflows/ci-cd.yml`)
   - Runs `npm ci` and `npm run build`
   - Builds a frontend Docker image (local tag)
 
-- docker-publish job (runs only on `main`):
+- docker-publish job (runs only on `develop`):
   - Logs into Docker Hub using `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`
   - Builds and pushes the backend and frontend images to Docker Hub
   - Optionally SSHs to your `DEPLOY_HOST` and runs `docker compose up -d` on the server
@@ -40,4 +40,4 @@ Notes & troubleshooting
 
 - The backend `Dockerfile` builds a jar named `app.jar` inside the image. If your Maven build produces a different final name, update `backend/Dockerfile` or set `-DfinalName=app` in the maven args.
 - The repository currently does not include the complete Maven wrapper files (the `.mvn/wrapper` directory). CI and the Docker `builder` stage use the system Maven bundled with the `maven` base image. If you want to use the Maven wrapper locally, recreate the wrapper by running `mvn -N io.takari:maven:wrapper` in the `backend` directory and commit the `.mvn/wrapper` files.
-- The `docker-publish` step only runs on the `main` branch — push to `main` or open a PR that merges into `main` to trigger image publishing.
+- The `docker-publish` step only runs on the `develop` branch — push to `develop` or open a PR that merges into `develop` to trigger image publishing.
