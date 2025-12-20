@@ -35,6 +35,37 @@ services:
       - redis-data:/data
     restart: unless-stopped
 
+  backend:
+    # Build when running locally; when deploying, the image from registry will be used instead if DOCKERHUB_USERNAME is set
+    build:
+      context: ./backend
+    image: ${DOCKERHUB_USERNAME:-local}/realtime_payment_processor-backend:latest
+    container_name: payments-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Point the backend to the local postgres/redis services when running via compose
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payments
+      SPRING_DATASOURCE_USERNAME: payments_admin
+      SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    image: ${DOCKERHUB_USERNAME:-local}/realtime_payment_processor-frontend:latest
+    container_name: payments-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres-data:
   postgres-dev-data:
