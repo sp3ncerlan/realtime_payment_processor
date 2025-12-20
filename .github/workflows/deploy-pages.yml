@@ -36,7 +36,11 @@ jobs:
       - name: Deploy to GitHub Pages (gh-pages branch)
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Use a Personal Access Token stored in the repository secret PAGES_DEPLOY_TOKEN
+          # Create a PAT with repo (repo:status, repo_deployment, public_repo) or 'repo' scope
+          # and add it to Settings -> Secrets -> Actions as PAGES_DEPLOY_TOKEN.
+          # Using a PAT avoids permission 403 for github-actions[bot] in some repos.
+          github_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
           publish_dir: ./frontend/dist
           publish_branch: gh-pages
           # optional: user config
