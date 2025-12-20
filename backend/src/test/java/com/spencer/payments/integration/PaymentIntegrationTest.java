@@ -3,6 +3,7 @@ package com.spencer.payments.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spencer.payments.payment.dto.request.PaymentRequestDTO;
 import com.spencer.payments.account.entity.Account;
+import com.spencer.payments.account.entity.AccountType;
 import com.spencer.payments.customer.entity.Customer;
 import com.spencer.payments.account.repository.AccountRepository;
 import com.spencer.payments.customer.repository.CustomerRepository;
@@ -60,7 +61,7 @@ public class PaymentIntegrationTest {
                 null,
                 testCustomer1,
                 "1001",
-                "SAVINGS",
+                AccountType.SAVINGS,
                 "USD",
                 new BigDecimal("1000.00"),
                 null));
@@ -69,7 +70,7 @@ public class PaymentIntegrationTest {
                 null,
                 testCustomer2,
                 "2001",
-                "CHECKING",
+                AccountType.CHECKING,
                 "USD",
                 new BigDecimal("500.00"),
                 null));
@@ -78,11 +79,12 @@ public class PaymentIntegrationTest {
     @Test
     void testSuccessfulPayment() throws Exception {
         // create payment request
-        PaymentRequestDTO paymentRequest = new PaymentRequestDTO();
-        paymentRequest.setSourceAccountId(sourceAccount.getId());
-        paymentRequest.setDestinationAccountId(destinationAccount.getId());
-        paymentRequest.setAmount(new BigDecimal("100.00"));
-        paymentRequest.setCurrency("USD");
+        PaymentRequestDTO paymentRequest = new PaymentRequestDTO(
+                sourceAccount.getId(),
+                destinationAccount.getId(),
+                new BigDecimal("100.00"),
+                "USD"
+        );
 
         // perform the request and verify the response
         mockMvc.perform(post("/api/payments")
