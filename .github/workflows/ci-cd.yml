@@ -31,12 +31,6 @@ jobs:
         image: redis:7
         ports:
           - 6379
-    env:
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:${{ job.services.postgres.ports[5432] }}/payments"
-      SPRING_DATASOURCE_USERNAME: payments_admin
-      SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
-      SPRING_DATA_REDIS_HOST: localhost
-      SPRING_DATA_REDIS_PORT: "${{ job.services.redis.ports[6379] }}"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,6 +67,12 @@ jobs:
             ${{ runner.os }}-m2-
 
       - name: Build and test backend
+        env:
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:${{ job.services.postgres.ports[5432] }}/payments"
+          SPRING_DATASOURCE_USERNAME: payments_admin
+          SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
+          SPRING_DATA_REDIS_HOST: localhost
+          SPRING_DATA_REDIS_PORT: "${{ job.services.redis.ports[6379] }}"
         run: |
           mvn -B -DskipTests=false clean package
 
