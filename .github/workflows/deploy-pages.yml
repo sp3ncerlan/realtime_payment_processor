@@ -33,15 +33,12 @@ jobs:
         run: |
           npm run build
 
-      - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy to GitHub Pages (gh-pages branch)
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: frontend/dist
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-deploy
-    steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
-
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/dist
+          publish_branch: gh-pages
+          # optional: user config
+          # publish_user_name: github-actions[bot]
+          # publish_user_email: 41898282+github-actions[bot]@users.noreply.github.com
