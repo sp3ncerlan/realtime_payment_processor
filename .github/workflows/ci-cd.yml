@@ -13,6 +13,30 @@ jobs:
     defaults:
       run:
         working-directory: backend
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: payments_admin
+          POSTGRES_PASSWORD: StrongP@ssw0rd123!
+          POSTGRES_DB: payments
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready -U payments_admin
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/payments
+      SPRING_DATASOURCE_USERNAME: payments_admin
+      SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
+      SPRING_DATA_REDIS_HOST: localhost
+      SPRING_DATA_REDIS_PORT: 6379
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +51,17 @@ jobs:
       - name: Install Maven
         run: |
           sudo apt-get update && sudo apt-get install -y maven
+
+      - name: Wait for Postgres to be ready
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          echo "Waiting for Postgres to accept connections..."
+          for i in $(seq 1 30); do
+            pg_isready -h localhost -p 5432 -U payments_admin && { echo "Postgres is ready"; exit 0; } || echo "Waiting... ($i)";
+            sleep 2
+          done
+          echo "Postgres did not become ready in time"; exit 1
 
       - name: Cache Maven repository
         uses: actions/cache@v4
