@@ -1,7 +1,7 @@
 import { usePayments } from '../hooks/usePayments';
-import StripedTable from './reusables/StripedTable';
+import Table from './reusables/Table';
 
-const PaymentTable = ({ currentCustomer, currentAccountData, payments, isConnected, isLoading, error }) => {
+const PaymentTable = ({ currentCustomer, currentAccountData, payments, isConnected, isLoading, error, latestPaymentId }) => {
   if (!currentCustomer || !currentCustomer.id) {
     return (
       <div className="text-center py-8">
@@ -16,7 +16,6 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, isConnect
       key: 'sender',
       label: 'From',
       render: (payment) => {
-        console.log(payment);
         return (
           <div>
             <p>{payment.sourceName || 'Unknown'}</p>
@@ -99,18 +98,14 @@ const PaymentTable = ({ currentCustomer, currentAccountData, payments, isConnect
       </div>
 
 
-      <StripedTable
+      <Table
         columns={columns}
-        data={payments}
+        data={payments.slice(0, 10)}
         isLoading={isLoading}
         error={error}
         emptyMessage="No payments yet. Waiting for transactions..."
+        latestPaymentId={latestPaymentId}
       />
-
-
-      <div className="mt-4 text-sm text-gray-400 text-center" style={{ marginBottom: 0, paddingBottom: 0, lineHeight: 1 }}>
-        Showing {payments.length} most recent payments
-      </div>
     </div>
   );
 };

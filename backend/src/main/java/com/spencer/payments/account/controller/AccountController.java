@@ -18,11 +18,19 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @GetMapping
+    public ResponseEntity<List<AccountResponseDTO>> getAllAccounts() {
+        return ResponseEntity.ok(accountService.getAllAccounts());
+    }
 
-
-    @GetMapping("/{accountId}")
+    @GetMapping("/id/{accountId}")
     public ResponseEntity<AccountResponseDTO> getAccount(@PathVariable UUID accountId) {
         return ResponseEntity.ok(accountService.getAccount(accountId));
+    }
+
+    @GetMapping("/number/{accountNumber}")
+    public ResponseEntity<AccountResponseDTO> getAccountByAccountNumber(@PathVariable String accountNumber) {
+        return ResponseEntity.ok(accountService.getAccountByAccountNumber(accountNumber));
     }
 
     @PostMapping

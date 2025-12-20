@@ -6,7 +6,7 @@ class WebSocketService {
         this.subscription = null;
     }
 
-    connect(customerId, onMessage, onError, onConnectionChange) {
+    connect(accountId, onMessage, onError, onConnectionChange) {
         this.client = new Client({
             brokerURL: 'ws://localhost:8080/ws',
 
@@ -28,10 +28,11 @@ class WebSocketService {
                 }
 
                 this.subscription = this.client.subscribe(
-                    `/topic/payments/${customerId}`,
+                    `/topic/payments/${accountId}`,
                     (message) => {
                         try {
                             const payment = JSON.parse(message.body);
+                            console.log("WebSocket received new payment:", payment);
                             onMessage(payment);
                         } catch (error) {
                             onError(error);
