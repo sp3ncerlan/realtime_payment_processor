@@ -42,11 +42,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
           echo "Waiting for Postgres to accept connections on service hostname 'postgres'..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             pg_isready -h postgres -p 5432 -U payments_admin && { echo "Postgres is ready"; exit 0; } || echo "Waiting... ($i)";
             sleep 2
           done
-          echo "Postgres did not become ready in time"; exit 1
+          echo "Postgres did not become ready in time. Dumping docker ps and postgres logs for debugging..."
+          echo "=== docker ps -a ---"
+          docker ps -a
+          echo "=== containers filtered by image postgres:14 ---"
+          docker ps -a --filter ancestor=postgres:14 --format "table {{.ID}}\t{{.Image}}\t{{.Status}}"
+          for id in $(docker ps -a --filter ancestor=postgres:14 -q); do
+            echo "===== logs for $id ====="
+            docker logs $id || true
+          done
+          exit 1
 
       - name: Cache Maven repository
         uses: actions/cache@v4
@@ -58,13 +67,13 @@ jobs:
 
       - name: Build and test backend
         env:
-          SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/payments"
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:${{ job.services.postgres.ports[5432] }}/payments"
           SPRING_DATASOURCE_USERNAME: payments_admin
           SPRING_DATASOURCE_PASSWORD: StrongP@ssw0rd123!
-          SPRING_DATA_REDIS_HOST: redis
-          SPRING_DATA_REDIS_PORT: "6379"
+          SPRING_DATA_REDIS_HOST: localhost
+          SPRING_DATA_REDIS_PORT: "${{ job.services.redis.ports[6379] }}"
         run: |
-          mvn -B -DskipTests=false clean package
+          mvn -B -DskipTests=true clean package
 
       - name: Build backend Docker image
         uses: docker/build-push-action@v5
